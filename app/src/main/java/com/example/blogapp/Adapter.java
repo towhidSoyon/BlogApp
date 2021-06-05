@@ -1,6 +1,7 @@
 package com.example.blogapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,25 +15,40 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.squareup.picasso.Picasso;
 
-import java.security.PrivateKey;
+import java.util.ArrayList;
 
 public class Adapter extends FirebaseRecyclerAdapter<Model ,Adapter.MyViewHolder> {
 
     Context context;
+    ArrayList<Model> modelList=new ArrayList<>();
 
-    public Adapter(@NonNull FirebaseRecyclerOptions<Model> options) {
+   /* public Adapter(@NonNull FirebaseRecyclerOptions<Model> options) {
         super(options);
+    }
+*/
+    public Adapter(@NonNull FirebaseRecyclerOptions<Model> options, Context context) {
+        super(options);
+        this.context = context;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull  Adapter.MyViewHolder holder, int position, @NonNull   Model model) {
+
+        final String postKey=getRef(position).getKey();
 
         holder.titleText.setText(model.getTitle());
         holder.descText.setText(model.getDesc());
 
         Picasso.with(holder.imageView.getContext()).load(model.getImage()).into(holder.imageView);
 
-
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailsActivity.class);
+                intent.putExtra("Position",postKey);
+                context.startActivity(intent);
+            }
+        });
 
     }
 
@@ -50,9 +66,19 @@ public class Adapter extends FirebaseRecyclerAdapter<Model ,Adapter.MyViewHolder
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            imageView=itemView.findViewById(R.id.ImageViewID);
-            titleText=itemView.findViewById(R.id.postTitleId);
-            descText=itemView.findViewById(R.id.postDescId);
+            imageView=itemView.findViewById(R.id.detailsImage);
+            titleText=itemView.findViewById(R.id.detailsTitle);
+            descText=itemView.findViewById(R.id.detailsDesc);
+
+            /*itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   Intent intent=new Intent(context,DetailsActivity.class);
+
+
+                }
+            });*/
+
         }
     }
 }
